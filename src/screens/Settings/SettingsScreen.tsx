@@ -7,7 +7,7 @@ import { useThemeStore } from '../../stores/themeStore';
 import { useDatabase } from '../../contexts/DatabaseContext';
 import { useImportExport } from '../../hooks/useImportExport';
 import { GradientBackground } from '../../ui/components/Gradient';
-import { LiquidGlassCard } from '../../ui/components/Glass';
+import { EnhancedCard } from '../../ui/components/Enhanced';
 
 export const SettingsScreen: React.FC = () => {
   const { mode, setTheme, toggleTheme } = useThemeStore();
@@ -15,12 +15,12 @@ export const SettingsScreen: React.FC = () => {
   const { isProcessing, exportAll, importAll } = useImportExport();
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1 }} edges={[]}>
       <GradientBackground variant="subtle">
-        <Layout style={{ flex: 1, padding: 16, backgroundColor: 'transparent' }}>
+        <Layout style={{ flex: 1, padding: 16, paddingTop: 60, backgroundColor: 'transparent' }}>
         <Text category="h1" style={{ marginBottom: 24 }}>Settings</Text>
       
-      <LiquidGlassCard style={{ marginBottom: 16 }}>
+      <EnhancedCard style={{ marginBottom: 16 }}>
         <Text category="h6" style={{ marginBottom: 12 }}>Theme</Text>
         <Text appearance="hint" style={{ marginBottom: 16 }}>
           Current theme: {mode.charAt(0).toUpperCase() + mode.slice(1)}
@@ -51,9 +51,9 @@ export const SettingsScreen: React.FC = () => {
             Custom
           </Button>
         </View>
-      </LiquidGlassCard>
+      </EnhancedCard>
 
-      <LiquidGlassCard style={{ marginBottom: 16 }}>
+      <EnhancedCard style={{ marginBottom: 16 }}>
         <Text category="h6" style={{ marginBottom: 12 }}>Database Status</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <View 
@@ -69,9 +69,9 @@ export const SettingsScreen: React.FC = () => {
             {isInitialized ? 'Connected' : error || 'Not connected'}
           </Text>
         </View>
-      </LiquidGlassCard>
+      </EnhancedCard>
 
-      <LiquidGlassCard style={{ marginBottom: 16 }}>
+      <EnhancedCard style={{ marginBottom: 16 }}>
         <Text category="h6" style={{ marginBottom: 12 }}>Data Management</Text>
         <View style={{ gap: 8 }}>
           <Button
@@ -94,13 +94,13 @@ export const SettingsScreen: React.FC = () => {
         <Text appearance="hint" category="c1" style={{ marginTop: 12 }}>
           Export your decks as JSON or import from backup files
         </Text>
-      </LiquidGlassCard>
+      </EnhancedCard>
 
-      <LiquidGlassCard>
+      <EnhancedCard>
         <Text category="h6" style={{ marginBottom: 12 }}>About</Text>
         <Text appearance="hint">Mnemonic - Flashcard Learning App</Text>
         <Text appearance="hint" category="c1">Version 1.0.0</Text>
-      </LiquidGlassCard>
+      </EnhancedCard>
         </Layout>
       </GradientBackground>
     </SafeAreaView>

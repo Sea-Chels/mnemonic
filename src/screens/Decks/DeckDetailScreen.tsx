@@ -125,7 +125,7 @@ export const DeckDetailScreen: React.FC<DeckDetailScreenProps> = ({ route, navig
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1 }} edges={[]}>
       <GradientBackground variant="accent">
         <Layout style={{ flex: 1, backgroundColor: 'transparent' }}>
         {/* Header with optional image banner */}
@@ -133,7 +133,7 @@ export const DeckDetailScreen: React.FC<DeckDetailScreenProps> = ({ route, navig
           <View style={{ position: 'relative' }}>
             <ImageBackground
               source={{ uri: deck.image_uri }}
-              style={{ height: 200 }}
+              style={{ height: 244 }}
               resizeMode="cover"
             >
               <BlurView
@@ -144,30 +144,35 @@ export const DeckDetailScreen: React.FC<DeckDetailScreenProps> = ({ route, navig
                   backgroundColor: 'rgba(0, 0, 0, 0.4)',
                 }}
               >
-                <TopNavigation
-                  title={() => (
-                    <Text style={{ 
-                      color: 'white',
-                      fontSize: 18,
-                      fontWeight: '600',
-                      textShadowColor: 'rgba(0,0,0,0.8)',
-                      textShadowOffset: { width: 1, height: 1 },
-                      textShadowRadius: 3,
-                    }}>
-                      {deck?.name || 'Deck'}
-                    </Text>
-                  )}
-                  accessoryLeft={BackAction}
-                  style={{ backgroundColor: 'transparent' }}
-                />
+                <View style={{ paddingTop: 44 }}>
+                  <TopNavigation
+                    title={() => (
+                      <Text style={{ 
+                        color: 'white',
+                        fontSize: 18,
+                        fontWeight: '600',
+                        textShadowColor: 'rgba(0,0,0,0.8)',
+                        textShadowOffset: { width: 1, height: 1 },
+                        textShadowRadius: 3,
+                      }}>
+                        {deck?.name || 'Deck'}
+                      </Text>
+                    )}
+                    accessoryLeft={BackAction}
+                    style={{ backgroundColor: 'transparent' }}
+                  />
+                </View>
               </BlurView>
             </ImageBackground>
           </View>
         ) : (
-          <TopNavigation
-            title={deck?.name || 'Deck'}
-            accessoryLeft={BackAction}
-          />
+          <View style={{ paddingTop: 44 }}>
+            <TopNavigation
+              title={deck?.name || 'Deck'}
+              accessoryLeft={BackAction}
+              style={{ backgroundColor: 'transparent' }}
+            />
+          </View>
         )}
         
         <Layout style={{ padding: 16, flex: 1 }}>

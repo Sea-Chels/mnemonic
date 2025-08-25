@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { Layout, Text, Card, Button } from '@ui-kitten/components';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDecks } from '../../hooks/decks/useDecks';
+import { GradientBackground } from '../../ui/components/Gradient';
 
 export const StudyHomeScreen: React.FC = () => {
   const { decks } = useDecks();
@@ -18,12 +19,14 @@ export const StudyHomeScreen: React.FC = () => {
 
   if (isStudying) {
     return (
-      <Layout style={{ flex: 1, padding: 16, justifyContent: 'center' }}>
-        <Card style={{ minHeight: 300, justifyContent: 'center', alignItems: 'center' }}>
-          <Text category="h4" style={{ textAlign: 'center', marginBottom: 20 }}>
-            {showAnswer ? currentCard.back : currentCard.front}
-          </Text>
-        </Card>
+      <SafeAreaView style={{ flex: 1 }} edges={[]}>
+        <GradientBackground variant="subtle">
+          <Layout style={{ flex: 1, padding: 16, paddingTop: 60, justifyContent: 'center', backgroundColor: 'transparent' }}>
+            <Card style={{ minHeight: 300, justifyContent: 'center', alignItems: 'center' }}>
+              <Text category="h4" style={{ textAlign: 'center', marginBottom: 20 }}>
+                {showAnswer ? currentCard.back : currentCard.front}
+              </Text>
+            </Card>
         
         <View style={{ marginTop: 24, gap: 12 }}>
           {!showAnswer ? (
@@ -83,14 +86,17 @@ export const StudyHomeScreen: React.FC = () => {
             End Session
           </Button>
         </View>
-      </Layout>
+          </Layout>
+        </GradientBackground>
+      </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={['top']}>
-      <Layout style={{ flex: 1, padding: 16 }}>
-        <Text category="h1" style={{ marginBottom: 24 }}>Study</Text>
+    <SafeAreaView style={{ flex: 1 }} edges={[]}>
+      <GradientBackground variant="subtle">
+        <Layout style={{ flex: 1, padding: 16, paddingTop: 60, backgroundColor: 'transparent' }}>
+          <Text category="h1" style={{ marginBottom: 24 }}>Study</Text>
       
       {decks.length === 0 ? (
         <Card>
@@ -139,7 +145,8 @@ export const StudyHomeScreen: React.FC = () => {
           </Button>
         </>
       )}
-      </Layout>
+        </Layout>
+      </GradientBackground>
     </SafeAreaView>
   );
 };

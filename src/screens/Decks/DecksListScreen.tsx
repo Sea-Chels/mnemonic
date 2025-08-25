@@ -72,7 +72,7 @@ export const DecksListScreen: React.FC<{ navigation: any }> = ({ navigation }) =
       style={{ 
         marginBottom: 16,
         overflow: 'hidden',
-        minHeight: item.image_uri ? 120 : 80,
+        minHeight: 100,
       }}
       onPress={() => navigation.navigate('DeckDetail', { deckId: item.id })}
       onLongPress={() => handleDeleteDeck(item)}
@@ -85,7 +85,7 @@ export const DecksListScreen: React.FC<{ navigation: any }> = ({ navigation }) =
             top: 0,
             left: 0,
             right: 0,
-            height: 120,
+            bottom: 0,
             opacity: 0.3,
           }}
           resizeMode="cover"
@@ -95,9 +95,9 @@ export const DecksListScreen: React.FC<{ navigation: any }> = ({ navigation }) =
         flexDirection: 'row', 
         justifyContent: 'space-between', 
         alignItems: 'center',
-        padding: item.image_uri ? 12 : 0,
-        minHeight: item.image_uri ? 120 : 60,
-        backgroundColor: item.image_uri ? 'rgba(0,0,0,0.4)' : 'transparent',
+        padding: 16,
+        minHeight: 100,
+        backgroundColor: item.image_uri ? 'rgba(0,0,0,0.5)' : 'transparent',
       }}>
         <View style={{ flex: 1 }}>
           <Text 
@@ -107,6 +107,7 @@ export const DecksListScreen: React.FC<{ navigation: any }> = ({ navigation }) =
               textShadowColor: item.image_uri ? 'rgba(0,0,0,0.8)' : undefined,
               textShadowOffset: item.image_uri ? { width: 1, height: 1 } : undefined,
               textShadowRadius: item.image_uri ? 3 : undefined,
+              marginBottom: 4,
             }}
           >
             {item.name}
@@ -116,7 +117,7 @@ export const DecksListScreen: React.FC<{ navigation: any }> = ({ navigation }) =
               appearance="hint" 
               category="c1"
               style={{
-                color: item.image_uri ? 'rgba(255,255,255,0.8)' : undefined,
+                color: item.image_uri ? 'rgba(255,255,255,0.9)' : undefined,
                 textShadowColor: item.image_uri ? 'rgba(0,0,0,0.8)' : undefined,
                 textShadowOffset: item.image_uri ? { width: 1, height: 1 } : undefined,
                 textShadowRadius: item.image_uri ? 2 : undefined,
@@ -126,17 +127,26 @@ export const DecksListScreen: React.FC<{ navigation: any }> = ({ navigation }) =
             </Text>
           ) : null}
         </View>
-        {!item.image_uri && (
-          <View style={{ backgroundColor: item.color, width: 40, height: 40, borderRadius: 20 }} />
-        )}
+        <View 
+          style={{ 
+            backgroundColor: item.color, 
+            width: 50, 
+            height: 50, 
+            borderRadius: 25,
+            marginLeft: 12,
+            opacity: item.image_uri ? 0.8 : 1,
+            borderWidth: item.image_uri ? 2 : 0,
+            borderColor: item.image_uri ? 'rgba(255,255,255,0.3)' : 'transparent',
+          }} 
+        />
       </View>
     </Card>
   ), [navigation, handleDeleteDeck]);
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1 }} edges={[]}>
       <GradientBackground variant="medium">
-        <Layout style={{ flex: 1, padding: 16, backgroundColor: 'transparent' }}>
+        <Layout style={{ flex: 1, padding: 16, paddingTop: 60, backgroundColor: 'transparent' }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <Text category="h1">My Decks</Text>
         <Button size="small" onPress={() => setIsModalVisible(true)}>
