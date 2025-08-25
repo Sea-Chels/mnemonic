@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, FlatList, Alert } from 'react-native';
-import { Layout, Text, Card, Button, Input, Modal, TopNavigation, TopNavigationAction, Icon } from '@ui-kitten/components';
+import { Layout, Text, Card, Button, Input, Modal, TopNavigation, TopNavigationAction } from '@ui-kitten/components';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { useFlashcards } from '../../hooks/flashcards/useFlashcards';
 import { useDecks } from '../../hooks/decks/useDecks';
 import { Flashcard, Deck } from '../../database/types';
@@ -12,7 +14,13 @@ interface DeckDetailScreenProps {
 }
 
 export const DeckDetailScreen: React.FC<DeckDetailScreenProps> = ({ route, navigation }) => {
-  const { deckId } = route.params;
+  const deckId = route.params?.deckId;
+  
+  if (!deckId) {
+    Alert.alert('Error', 'No deck ID provided');
+    navigation.goBack();
+    return null;
+  }
   const { getDeckById } = useDecks();
   const { flashcards, loading, createFlashcard, deleteFlashcard } = useFlashcards(deckId);
   const [deck, setDeck] = useState<Deck | null>(null);
@@ -27,6 +35,11 @@ export const DeckDetailScreen: React.FC<DeckDetailScreenProps> = ({ route, navig
   const loadDeck = async () => {
     try {
       const deckData = await getDeckById(deckId);
+      if (!deckData) {
+        Alert.alert('Error', 'Deck not found');
+        navigation.goBack();
+        return;
+      }
       setDeck(deckData);
     } catch (err) {
       Alert.alert('Error', 'Failed to load deck');
@@ -74,7 +87,7 @@ export const DeckDetailScreen: React.FC<DeckDetailScreenProps> = ({ route, navig
   const stats = calculateDeckStatistics(flashcards);
 
   const BackIcon = (props: any) => (
-    <Icon {...props} name='arrow-back' />
+    <Ionicons name="arrow-back" size={24} color={props.tintColor || '#8F9BB3'} />
   );
 
   const BackAction = () => (
@@ -109,13 +122,14 @@ export const DeckDetailScreen: React.FC<DeckDetailScreenProps> = ({ route, navig
   }
 
   return (
-    <Layout style={{ flex: 1 }}>
-      <TopNavigation
-        title={deck.name}
-        accessoryLeft={BackAction}
-      />
-      
-      <Layout style={{ padding: 16, flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+      <Layout style={{ flex: 1 }}>
+        <TopNavigation
+          title={deck?.name || 'Deck'}
+          accessoryLeft={BackAction}
+        />
+        
+        <Layout style={{ padding: 16, flex: 1 }}>
         {/* Statistics Card */}
         <Card style={{ marginBottom: 16 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
@@ -220,7 +234,8 @@ export const DeckDetailScreen: React.FC<DeckDetailScreenProps> = ({ route, navig
             </View>
           </Card>
         </Modal>
+        </Layout>
       </Layout>
-    </Layout>
+    </SafeAreaView>
   );
 };

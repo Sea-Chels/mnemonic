@@ -1,6 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { BottomNavigation, BottomNavigationTab } from '@ui-kitten/components';
+import { BottomNavigation, BottomNavigationTab, useTheme } from '@ui-kitten/components';
 import { Ionicons } from '@expo/vector-icons';
 import { DecksStack } from './DecksStack';
 import { StudyStack } from './StudyStack';
@@ -22,6 +22,8 @@ const SettingsIcon = (props: any) => (
 );
 
 export const TabNavigator: React.FC = () => {
+  const theme = useTheme();
+  
   const BottomTabBar = ({ navigation, state }: any) => (
     <BottomNavigation
       selectedIndex={state.index}
@@ -30,12 +32,11 @@ export const TabNavigator: React.FC = () => {
         paddingTop: 10,
         paddingBottom: 25,
         paddingHorizontal: 20,
-        backgroundColor: 'rgba(255, 255, 255, 0.85)',
-        backdropFilter: 'blur(20px)',
+        backgroundColor: theme['color-primary-100'],
         borderTopWidth: 1,
-        borderTopColor: 'rgba(255, 255, 255, 0.2)',
+        borderTopColor: theme['color-primary-200'],
         elevation: 20,
-        shadowColor: '#000',
+        shadowColor: theme['color-primary-300'],
         shadowOffset: {
           width: 0,
           height: -5,
