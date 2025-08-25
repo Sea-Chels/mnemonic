@@ -58,5 +58,12 @@
   "text-alternate-color": "#FFFFFF",
   "text-control-color": "#FFFFFF",
   "text-disabled-color": "#9CA3AF",
-  "text-hint-color": "#6B7280"
+  "text-hint-color": "#6B7280",
+
+  "glass-blur-intensity": 35,
+  "glass-opacity-light": 0.3,
+  "glass-opacity-medium": 0.4,
+  "glass-opacity-heavy": 0.6,
+  "glass-border-opacity": 0.4,
+  "glass-shadow-opacity": 0.15
 }

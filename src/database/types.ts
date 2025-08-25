@@ -4,6 +4,7 @@ export interface Deck {
   description?: string;
   color: string;
   icon: string;
+  image_uri?: string;
   created_at: string;
   updated_at: string;
 }

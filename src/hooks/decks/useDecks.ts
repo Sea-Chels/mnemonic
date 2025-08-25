@@ -24,13 +24,13 @@ export const useDecks = () => {
     }
   }, [db, isInitialized]);
 
-  const createDeck = async (name: string, description?: string, color?: string) => {
+  const createDeck = async (name: string, description?: string, color?: string, imageUri?: string) => {
     if (!db) throw new Error('Database not initialized');
 
     try {
       const result = await db.runAsync(
-        'INSERT INTO decks (name, description, color) VALUES (?, ?, ?)',
-        [name, description || null, color || '#3366FF']
+        'INSERT INTO decks (name, description, color, image_uri) VALUES (?, ?, ?, ?)',
+        [name, description || null, color || '#3366FF', imageUri || null]
       );
       await loadDecks();
       return result.lastInsertRowId;
@@ -57,6 +57,10 @@ export const useDecks = () => {
     if (updates.color !== undefined) {
       fields.push('color = ?');
       values.push(updates.color);
+    }
+    if (updates.image_uri !== undefined) {
+      fields.push('image_uri = ?');
+      values.push(updates.image_uri);
     }
 
     if (fields.length === 0) return;

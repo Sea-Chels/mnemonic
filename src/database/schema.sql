@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS decks (
     description TEXT,
     color TEXT DEFAULT '#3366FF',
     icon TEXT DEFAULT 'book',
+    image_uri TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );

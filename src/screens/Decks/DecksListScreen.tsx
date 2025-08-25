@@ -1,15 +1,21 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { View, FlatList, Alert } from 'react-native';
+import { View, FlatList, Alert, Image, TouchableOpacity } from 'react-native';
 import { Layout, Text, Card, Button, Input, Modal } from '@ui-kitten/components';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { useDecks } from '../../hooks/decks/useDecks';
+import { useImagePicker } from '../../hooks/useImagePicker';
 import { Deck } from '../../database/types';
+import { EnhancedModal } from '../../ui/components/Enhanced';
+import { GradientBackground } from '../../ui/components/Gradient';
 
 export const DecksListScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { decks, loading, error, createDeck, deleteDeck } = useDecks();
+  const { showImagePickerOptions } = useImagePicker();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newDeckName, setNewDeckName] = useState('');
   const [newDeckDescription, setNewDeckDescription] = useState('');
+  const [newDeckImageUri, setNewDeckImageUri] = useState<string | null>(null);
 
   const handleCreateDeck = useCallback(async () => {
     if (!newDeckName.trim()) {
@@ -18,14 +24,27 @@ export const DecksListScreen: React.FC<{ navigation: any }> = ({ navigation }) =
     }
 
     try {
-      await createDeck(newDeckName.trim(), newDeckDescription.trim());
+      await createDeck(
+        newDeckName.trim(), 
+        newDeckDescription.trim(), 
+        undefined, // color - use default
+        newDeckImageUri || undefined
+      );
       setNewDeckName('');
       setNewDeckDescription('');
+      setNewDeckImageUri(null);
       setIsModalVisible(false);
     } catch (err) {
       Alert.alert('Error', 'Failed to create deck');
     }
-  }, [newDeckName, newDeckDescription, createDeck]);
+  }, [newDeckName, newDeckDescription, newDeckImageUri, createDeck]);
+
+  const handleSelectImage = useCallback(async () => {
+    const imageUri = await showImagePickerOptions();
+    if (imageUri) {
+      setNewDeckImageUri(imageUri);
+    }
+  }, [showImagePickerOptions]);
 
   const handleDeleteDeck = useCallback((deck: Deck) => {
     Alert.alert(
@@ -50,25 +69,74 @@ export const DecksListScreen: React.FC<{ navigation: any }> = ({ navigation }) =
 
   const renderDeck = useCallback(({ item }: { item: Deck }) => (
     <Card 
-      style={{ marginBottom: 16 }}
+      style={{ 
+        marginBottom: 16,
+        overflow: 'hidden',
+        minHeight: item.image_uri ? 120 : 80,
+      }}
       onPress={() => navigation.navigate('DeckDetail', { deckId: item.id })}
       onLongPress={() => handleDeleteDeck(item)}
     >
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+      {item.image_uri && (
+        <Image 
+          source={{ uri: item.image_uri }}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 120,
+            opacity: 0.3,
+          }}
+          resizeMode="cover"
+        />
+      )}
+      <View style={{ 
+        flexDirection: 'row', 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+        padding: item.image_uri ? 12 : 0,
+        minHeight: item.image_uri ? 120 : 60,
+        backgroundColor: item.image_uri ? 'rgba(0,0,0,0.4)' : 'transparent',
+      }}>
         <View style={{ flex: 1 }}>
-          <Text category="h6">{item.name}</Text>
+          <Text 
+            category="h6" 
+            style={{ 
+              color: item.image_uri ? 'white' : undefined,
+              textShadowColor: item.image_uri ? 'rgba(0,0,0,0.8)' : undefined,
+              textShadowOffset: item.image_uri ? { width: 1, height: 1 } : undefined,
+              textShadowRadius: item.image_uri ? 3 : undefined,
+            }}
+          >
+            {item.name}
+          </Text>
           {item.description ? (
-            <Text appearance="hint" category="c1">{item.description}</Text>
+            <Text 
+              appearance="hint" 
+              category="c1"
+              style={{
+                color: item.image_uri ? 'rgba(255,255,255,0.8)' : undefined,
+                textShadowColor: item.image_uri ? 'rgba(0,0,0,0.8)' : undefined,
+                textShadowOffset: item.image_uri ? { width: 1, height: 1 } : undefined,
+                textShadowRadius: item.image_uri ? 2 : undefined,
+              }}
+            >
+              {item.description}
+            </Text>
           ) : null}
         </View>
-        <View style={{ backgroundColor: item.color, width: 40, height: 40, borderRadius: 20 }} />
+        {!item.image_uri && (
+          <View style={{ backgroundColor: item.color, width: 40, height: 40, borderRadius: 20 }} />
+        )}
       </View>
     </Card>
   ), [navigation, handleDeleteDeck]);
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={['top']}>
-      <Layout style={{ flex: 1, padding: 16 }}>
+      <GradientBackground variant="medium">
+        <Layout style={{ flex: 1, padding: 16, backgroundColor: 'transparent' }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <Text category="h1">My Decks</Text>
         <Button size="small" onPress={() => setIsModalVisible(true)}>
@@ -98,13 +166,15 @@ export const DecksListScreen: React.FC<{ navigation: any }> = ({ navigation }) =
         />
       )}
 
-      <Modal
+      <EnhancedModal
         visible={isModalVisible}
-        backdropStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
-        onBackdropPress={() => setIsModalVisible(false)}
-        style={{ width: '90%' }}
+        onBackdropPress={() => {
+          setIsModalVisible(false);
+          setNewDeckName('');
+          setNewDeckDescription('');
+          setNewDeckImageUri(null);
+        }}
       >
-        <Card disabled={true}>
           <Text category="h6" style={{ marginBottom: 16 }}>Create New Deck</Text>
           
           <Input
@@ -123,6 +193,41 @@ export const DecksListScreen: React.FC<{ navigation: any }> = ({ navigation }) =
             style={{ marginBottom: 16 }}
           />
           
+          {/* Image Picker Section */}
+          <Text category="s2" style={{ marginBottom: 8 }}>Deck Image (Optional)</Text>
+          <TouchableOpacity
+            onPress={handleSelectImage}
+            style={{
+              borderWidth: 2,
+              borderStyle: 'dashed',
+              borderColor: '#8F9BB3',
+              borderRadius: 12,
+              padding: 20,
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: 16,
+              minHeight: 100,
+            }}
+          >
+            {newDeckImageUri ? (
+              <View style={{ alignItems: 'center' }}>
+                <Image
+                  source={{ uri: newDeckImageUri }}
+                  style={{ width: 80, height: 50, borderRadius: 8, marginBottom: 8 }}
+                  resizeMode="cover"
+                />
+                <Text category="c1" appearance="hint">Tap to change image</Text>
+              </View>
+            ) : (
+              <View style={{ alignItems: 'center' }}>
+                <Ionicons name="camera-outline" size={32} color="#8F9BB3" />
+                <Text category="c1" appearance="hint" style={{ marginTop: 8 }}>
+                  Tap to add an image
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
+          
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <Button 
               appearance="ghost" 
@@ -130,6 +235,7 @@ export const DecksListScreen: React.FC<{ navigation: any }> = ({ navigation }) =
                 setIsModalVisible(false);
                 setNewDeckName('');
                 setNewDeckDescription('');
+                setNewDeckImageUri(null);
               }}
             >
               Cancel
@@ -138,9 +244,9 @@ export const DecksListScreen: React.FC<{ navigation: any }> = ({ navigation }) =
               Create
             </Button>
           </View>
-        </Card>
-      </Modal>
-      </Layout>
+      </EnhancedModal>
+        </Layout>
+      </GradientBackground>
     </SafeAreaView>
   );
 };

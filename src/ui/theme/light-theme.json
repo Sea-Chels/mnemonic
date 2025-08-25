@@ -47,5 +47,12 @@
   "color-danger-600": "#E53E3E",
   "color-danger-700": "#C53030",
   "color-danger-800": "#9B2C2C",
-  "color-danger-900": "#742A2A"
+  "color-danger-900": "#742A2A",
+
+  "glass-blur-intensity": 25,
+  "glass-opacity-light": 0.25,
+  "glass-opacity-medium": 0.35,
+  "glass-opacity-heavy": 0.5,
+  "glass-border-opacity": 0.3,
+  "glass-shadow-opacity": 0.1
 }

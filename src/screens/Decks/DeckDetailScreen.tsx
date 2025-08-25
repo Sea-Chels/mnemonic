@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, FlatList, Alert } from 'react-native';
-import { Layout, Text, Card, Button, Input, Modal, TopNavigation, TopNavigationAction } from '@ui-kitten/components';
+import { View, FlatList, Alert, Image, ImageBackground } from 'react-native';
+import { Layout, Text, Card, Button, Input, TopNavigation, TopNavigationAction } from '@ui-kitten/components';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur';
 import { useFlashcards } from '../../hooks/flashcards/useFlashcards';
 import { useDecks } from '../../hooks/decks/useDecks';
 import { Flashcard, Deck } from '../../database/types';
 import { calculateDeckStatistics } from '../../utils/spacedRepetition';
+import { EnhancedCard, EnhancedModal } from '../../ui/components/Enhanced';
+import { GradientBackground } from '../../ui/components/Gradient';
 
 interface DeckDetailScreenProps {
   route: { params: { deckId: number } };
@@ -123,15 +126,53 @@ export const DeckDetailScreen: React.FC<DeckDetailScreenProps> = ({ route, navig
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={['top']}>
-      <Layout style={{ flex: 1 }}>
-        <TopNavigation
-          title={deck?.name || 'Deck'}
-          accessoryLeft={BackAction}
-        />
+      <GradientBackground variant="accent">
+        <Layout style={{ flex: 1, backgroundColor: 'transparent' }}>
+        {/* Header with optional image banner */}
+        {deck?.image_uri ? (
+          <View style={{ position: 'relative' }}>
+            <ImageBackground
+              source={{ uri: deck.image_uri }}
+              style={{ height: 200 }}
+              resizeMode="cover"
+            >
+              <BlurView
+                intensity={20}
+                tint="dark"
+                style={{
+                  flex: 1,
+                  backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                }}
+              >
+                <TopNavigation
+                  title={() => (
+                    <Text style={{ 
+                      color: 'white',
+                      fontSize: 18,
+                      fontWeight: '600',
+                      textShadowColor: 'rgba(0,0,0,0.8)',
+                      textShadowOffset: { width: 1, height: 1 },
+                      textShadowRadius: 3,
+                    }}>
+                      {deck?.name || 'Deck'}
+                    </Text>
+                  )}
+                  accessoryLeft={BackAction}
+                  style={{ backgroundColor: 'transparent' }}
+                />
+              </BlurView>
+            </ImageBackground>
+          </View>
+        ) : (
+          <TopNavigation
+            title={deck?.name || 'Deck'}
+            accessoryLeft={BackAction}
+          />
+        )}
         
         <Layout style={{ padding: 16, flex: 1 }}>
         {/* Statistics Card */}
-        <Card style={{ marginBottom: 16 }}>
+        <EnhancedCard style={{ marginBottom: 16 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
             <View style={{ alignItems: 'center' }}>
               <Text category="h6">{stats.totalCards}</Text>
@@ -150,7 +191,7 @@ export const DeckDetailScreen: React.FC<DeckDetailScreenProps> = ({ route, navig
               <Text appearance="hint" category="c1">Learning</Text>
             </View>
           </View>
-        </Card>
+        </EnhancedCard>
 
         {/* Action Buttons */}
         <View style={{ flexDirection: 'row', gap: 12, marginBottom: 16 }}>
@@ -190,13 +231,10 @@ export const DeckDetailScreen: React.FC<DeckDetailScreenProps> = ({ route, navig
         )}
 
         {/* Add Card Modal */}
-        <Modal
+        <EnhancedModal
           visible={isModalVisible}
-          backdropStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
           onBackdropPress={() => setIsModalVisible(false)}
-          style={{ width: '90%' }}
         >
-          <Card disabled={true}>
             <Text category="h6" style={{ marginBottom: 16 }}>Add New Card</Text>
 
             <Input
@@ -232,10 +270,10 @@ export const DeckDetailScreen: React.FC<DeckDetailScreenProps> = ({ route, navig
                 Create
               </Button>
             </View>
-          </Card>
-        </Modal>
+        </EnhancedModal>
+          </Layout>
         </Layout>
-      </Layout>
+      </GradientBackground>
     </SafeAreaView>
   );
 };

@@ -25,6 +25,21 @@ interface DatabaseProviderProps {
   children: ReactNode;
 }
 
+const runMigrations = async (database: SQLite.SQLiteDatabase) => {
+  try {
+    // Check if image_uri column exists in decks table
+    const tableInfo = await database.getAllAsync("PRAGMA table_info(decks);");
+    const hasImageUri = tableInfo.some((column: any) => column.name === 'image_uri');
+    
+    if (!hasImageUri) {
+      console.log('Adding image_uri column to decks table...');
+      await database.execAsync('ALTER TABLE decks ADD COLUMN image_uri TEXT;');
+    }
+  } catch (error) {
+    console.warn('Migration warning (this is usually fine for new databases):', error);
+  }
+};
+
 export const DatabaseProvider: React.FC<DatabaseProviderProps> = ({ children }) => {
   const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -43,6 +58,7 @@ export const DatabaseProvider: React.FC<DatabaseProviderProps> = ({ children }) 
             description TEXT,
             color TEXT DEFAULT '#3366FF',
             icon TEXT DEFAULT 'book',
+            image_uri TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
           );
@@ -72,6 +88,9 @@ export const DatabaseProvider: React.FC<DatabaseProviderProps> = ({ children }) 
             FOREIGN KEY (deck_id) REFERENCES decks(id) ON DELETE CASCADE
           );
         `);
+
+        // Run migrations for existing databases
+        await runMigrations(database);
 
         setDb(database);
         setIsInitialized(true);
